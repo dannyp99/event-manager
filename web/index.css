@@ -1,0 +1,23 @@
+body {
+    display: grid;
+    grid-template: "summary detail" 1fr "controls controls" 40px/1fr 1fr;
+  }
+
+event-list {
+    grid-area: summary;
+    display: grid;
+}
+  
+event-summary:hover {
+    background-color: #eee;
+    cursor: pointer;
+}
+  
+event-summary:active {
+    background-color: #ddd;
+}
+  
+calendar-view {
+    grid-area: detail;
+    background-color: #eee;
+}

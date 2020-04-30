@@ -4,8 +4,18 @@
         <meta charset="utf-8"/>
         <title>Event Manager</title>
         <link rel="stylesheet" href="index.css">
+        <script src="sugar.js"></script>
+        <script>Sugar.extend()</script>
+        <script src="main.js" type="module"></script>
     </head>
     <body>
-        <h1>Event Manager</h1>
+        <event-list>
+        </event-list>
+        <button id="add">Add Event</button>
+        <calendar-view>
+            <input type="text" name="description"/>
+            <input type="date" name="event-date"/>
+            <button id="remove">Delete</button>
+        </calendar-view>
     </body>
 </html>
