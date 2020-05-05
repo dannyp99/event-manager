@@ -9,9 +9,9 @@ const KoaStatic = require('koa-static')
 let file_server = KoaStatic("../web")
 
 let eventList = [
-    {id: 1, name: "Liam's Birthday", date:"5/3/20"},
-    {id: 2, name: "Doctor's Appointment", date: "5/12/20"},
-    {id: 3, name: "CSC 155 Final", date: "5/14/20"}
+    {id: 1, name: "Liam's Birthday", date:"5/4/2020"},
+    {id: 2, name: "Doctor's Appointment", date: "5/6/2020"},
+    {id: 3, name: "CSC 155 Final", date: "5/7/2020"}
 ]
 
 router.get('/events', async (context) => {

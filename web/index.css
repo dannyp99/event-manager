@@ -1,7 +1,11 @@
-body {
+.gridBody {
     display: grid;
     grid-template: "summary detail" 1fr "controls controls" 40px/1fr 1fr;
   }
+
+.top {
+    padding-top: 10%;
+}
 
 event-list {
     grid-area: summary;
@@ -20,4 +24,36 @@ event-summary:active {
 calendar-view {
     grid-area: detail;
     background-color: #eee;
+}
+
+.divTable{
+    border: 2px solid rgb(117, 117, 117);
+	display: table;
+	width: 100%;
+}
+.divTableRow {
+	display: table-row;
+}
+.divTableHeading {
+    background-color: rgb(117, 117, 117);
+	display: table-header-group;
+}
+.divTableCell, .divTableHead {
+    align-self: center;
+    border: 5px solid rgb(161, 161, 161);
+	display: table-cell;
+	padding: 3px 10px;
+}
+.divTableHeading {
+	background-color: #EEE;
+	display: table-header-group;
+	font-weight: bold;
+}
+.divTableFoot {
+	background-color: #EEE;
+	display: table-footer-group;
+	font-weight: bold;
+}
+.divTableBody {
+	display: table-row-group;
 }

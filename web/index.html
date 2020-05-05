@@ -9,13 +9,23 @@
         <script src="main.js" type="module"></script>
     </head>
     <body>
-        <event-list>
-        </event-list>
-        <button id="add">Add Event</button>
-        <calendar-view>
-            <input type="text" name="description"/>
-            <input type="date" name="event-date"/>
-            <button id="remove">Delete</button>
-        </calendar-view>
+        <div class="gridBody">
+            <event-list>
+            </event-list>
+            <calendar-view>
+                <br>
+                <input type="text" name="description"/>
+                <input type="date" name="event-date"/>
+                <button id="remove">Delete</button>
+                <button id="add">Add Event</button>
+            </calendar-view>
+        </div>
+        <div class="top"></div>
+        <div class="divTable">
+            <div class="divTableBody">
+                <div id='dateTable' class="divTableRow">
+                </div>
+            </div>
+        </div> 
     </body>
 </html>
