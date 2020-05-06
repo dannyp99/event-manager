@@ -75,24 +75,28 @@ function updateCalendar(newEvent){
 
 async function addEventButton(){
     const eventName = document.getElementById('eventName').value
-        const eventDate = document.getElementById('eventDate').value
-        if(eventName === '' || eventDate === ''){return}
-        const eventDateAsDate = new Date(eventDate)
-        eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
-        let weekEnd = new Date()
-        weekEnd.setDate(weekEnd.getDate() + 7)
-        const newEvent = {id: '', name: eventName, date: eventDateAsDate.toLocaleDateString()}
-        let resp = await eventListPost(newEvent)
-        if(resp.ok){
-            let content = await resp.json()
-            events.push(content)
-            updateEventList(content)
-            if(weekEnd > eventDateAsDate){
-                updateCalendar(content)
-            }
-        }else{
-            console.log(`Failed to add Event Error: ${resp.status}`)
+    const eventDate = document.getElementById('eventDate').value
+    if(eventName === '' || eventDate === ''){return}
+    const eventDateAsDate = new Date(eventDate)
+    eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
+    let weekEnd = new Date()
+    weekEnd.setDate(weekEnd.getDate() + 7)
+    const newEvent = {id: '', name: eventName, date: eventDateAsDate.toLocaleDateString()}
+    let resp = await eventListPost(newEvent)
+    if(resp.ok){
+        let content = await resp.json()
+        events.push(content)
+        updateEventList(content)
+        if(weekEnd > eventDateAsDate){
+            updateCalendar(content)
         }
+    }else{
+        console.log(`Failed to add Event Error: ${resp.status}`)
+    }
+}
+
+async function deleteEventButton(){
+    
 }
 
 let events = []
@@ -103,6 +107,10 @@ let main = async function() {
     var addButton = document.getElementById('addEvent')
     addButton.addEventListener('click', (event) => {
         addEventButton()
+    })
+    var deleteButton = document.getElementById('removeEvent')
+    deleteButton.addEventListener('click', (event)=> {
+        deleteEventButton()
     })
 }
 main()
