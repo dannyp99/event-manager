@@ -5,6 +5,7 @@ const router = new Router()
 const fetch = require('node-fetch')
 const logger = require('koa-logger')
 const KoaStatic = require('koa-static')
+const bodyParser = require('koa-bodyparser')
 
 let file_server = KoaStatic("../web")
 
@@ -21,6 +22,7 @@ router.get('/events', async (context) => {
 router.post("/events", async (context) => {
     let newEvent = context.request.body
     newEvent.id = eventList.length + 1
+    console.log(newEvent)
     eventList.push(newEvent)
     context.response.status = 201
     context.response.body = newEvent
@@ -49,6 +51,7 @@ router.delete("/events/:id", async (context) => {
 
 app.use(file_server)
 app.use(logger())
+app.use(bodyParser())
 app.use(router.routes()).use(router.allowedMethods())
 
 app.listen(3000, () => {
