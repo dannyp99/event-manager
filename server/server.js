@@ -7,48 +7,82 @@ const logger = require('koa-logger')
 const KoaStatic = require('koa-static')
 const bodyParser = require('koa-bodyparser')
 const Sugar = require('sugar')
+const sql = require('./database.js')
 Sugar.extend()
 
 let file_server = KoaStatic("../web")
-
-let eventList = [
-    {id: 1, name: "Liam's Birthday", date:"5/4/2020"},
-    {id: 2, name: "Doctor's Appointment", date: "5/6/2020"},
-    {id: 3, name: "CSC 155 Final", date: "5/7/2020"}
-]
+console.log(sql)
 
 router.get('/events', async (context) => {
+    let eventList = []
+    const query = 'SELECT * FROM event_manager.event_table'
+    try {
+		const data = await sql.con.query(query);
+        //console.log(data[0].event_id);
+        data.forEach(item => {
+            eventList.push({id: item.event_id, name: item.event_name, date: item.event_date_str})
+        })
+	}
+    catch (err) { console.log(err) }
     context.response.body = eventList
 })
 
 router.post("/events", async (context) => {
     let newEvent = context.request.body
     newEvent.id = eventList.length + 1
-    console.log(newEvent)
-    eventList.push(newEvent)
+    let query = `SELECT * FROM event_manager.event_table WHERE event_id = ${sql.con.escape(newEvent.id)}`
+    try{
+        let data = await sql.con.query(query)
+        if(data.length === 1){
+            query = `DELETE FROM event_manager.event_table WHERE event_id = ${sql.con.escape(newEvent.id)}`
+            try {
+                await sql.con.query(query)
+            }catch(err){
+                console.log(err)
+            }
+        }else{
+            if(data.length === 0){ console.log("No results returned") }
+            else{ console.log("Several items returned for the same ID ERROR") }
+        }
+    }catch(err){
+        console.log(err)
+    }
     context.response.status = 201
     context.response.body = newEvent
 })
 
-router.put("/events/:id", async (context) => {
-    let eventID = Number(context.params.id)
-    let updatedEventData = context.request.body
+// router.put("/events/:id", async (context) => {
+//     let eventID = Number(context.params.id)
+//     let updatedEventData = context.request.body
   
-    let chosenEvent = eventList.find((event) => event.id === eventID )
+//     let chosenEvent = eventList.find((event) => event.id === eventID )
   
-    chosenEvent.date = updatedEventData.date
-    chosenEvent.name = updatedEventData.name
+//     chosenEvent.date = updatedEventData.date
+//     chosenEvent.name = updatedEventData.name
   
-    context.response.status = 204
-})
+//     context.response.status = 204
+// })
 
 router.delete("/events/:id", async (context) => {
     let eventID = Number(context.params.id)
-  
-    let chosenEvent = eventList.find((event) => event.id === eventID )
-  
-    eventList.remove(chosenEvent)
-    context.response.status = 204
+    let query = `SELECT * FROM event_manager.event_table WHERE event_id = ${sql.con.escape(eventID)}`
+    try{
+        let data = await sql.con.query(query)
+        if(data.length === 1){
+            query = `DELETE FROM event_manager.event_table WHERE event_id = ${sql.con.escape(eventID)}`
+            try {
+                await sql.con.query(query)
+                context.response.status = 204
+            }catch(err){
+                console.log(err)
+            }
+        }else{
+            if(data.length === 0){ console.log("No results returned") }
+            else{ console.log("Several items returned for the same ID ERROR") }
+        }
+    }catch(err){
+        console.log(err)
+    }
   })
 
 app.use(file_server)

@@ -121,6 +121,7 @@ function updateCalendar(newEvent, delEvent){
     let element = document.querySelectorAll('div.divTableCell')
     let eventAsDateString = new Date(newEvent.date).toDateString()
     const idx = calendarDates.findIndex(date => date === eventAsDateString)
+    if(idx < 0){return}
     if(delEvent){
         let dayEvents = element[idx].getElementsByTagName('p')
         let delEvent = findHtmlEvent(dayEvents,newEvent)
