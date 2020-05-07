@@ -30,7 +30,7 @@ router.post("/events", async (context) => {
     let newEvent = context.request.body
     if(!(newEvent.name && newEvent.date)){return}
     const query = `INSERT INTO event_manager.event_table (event_name, event_date, event_date_str) 
-        VALUES (${sql.con.escape(newEvent.name)}, NOW(), ${sql.con.escape(newEvent.name)})`
+        VALUES (${sql.con.escape(newEvent.name)}, NOW(), ${sql.con.escape(newEvent.date)})`
     try{
         let data = await sql.con.query(query)
     }catch(err){
