@@ -6,6 +6,8 @@ const fetch = require('node-fetch')
 const logger = require('koa-logger')
 const KoaStatic = require('koa-static')
 const bodyParser = require('koa-bodyparser')
+const Sugar = require('sugar')
+Sugar.extend()
 
 let file_server = KoaStatic("../web")
 

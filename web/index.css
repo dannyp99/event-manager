@@ -12,12 +12,12 @@ event-list {
     display: grid;
 }
   
-event-summary:hover {
+p:hover {
     background-color: #eee;
     cursor: pointer;
 }
   
-event-summary:active {
+p:active {
     background-color: #ddd;
 }
   

@@ -26,15 +26,24 @@ function isDuplicateEvent(eventName,eventDate){
     }
 }
 
+function findHtmlEvent(htmlEvents,delEvent){
+    let delEventId = delEvent.id.toString()
+    for (let event of htmlEvents) {
+        if(event.id === delEventId){
+            return event
+        }
+    }
+    return undefined
+}
+
 function buildEventElement(event){
-    let newEvent = document.createElement('event-summary')
     let eventContent = document.createElement('p')
+    eventContent.id = event.id
     eventContent.innerText = `${event.name}: ${event.date}`
-    newEvent.appendChild(eventContent)
     eventContent.addEventListener('click', (event)=> {
         updateEventModifier(event.target)
     })
-    return newEvent
+    return eventContent
 }
 
 function createEventList(eventList){
@@ -45,10 +54,20 @@ function createEventList(eventList){
     });
 }
 
-function updateEventList(event){
+function updateEventList(event,delEvent){
     let eventListElement = document.querySelector('event-list')
-    let newEvent = buildEventElement(event)
-    eventListElement.appendChild(newEvent)
+    if(delEvent){
+        let dayEvents = eventListElement.getElementsByTagName('p')
+        let delEvent = findHtmlEvent(dayEvents,event)
+        if(delEvent){
+            eventListElement.removeChild(delEvent)
+        }else{
+            console.log('Failed to find event in event list')
+        }
+    }else{
+        let newEvent = buildEventElement(event)
+        eventListElement.appendChild(newEvent)
+    }
 }
 
 async function eventListGet(){
@@ -81,6 +100,7 @@ function buildCalendar() {
             dateCell.innerHTML = `<div class="divTableHead"><strong>${today.toDateString()}</strong></div>`
             eventDates.forEach(eventDate => {
                 let event = document.createElement('p')
+                event.id = eventDate.id
                 event.innerText = `${eventDate.name} ${eventDate.date}`
                 dateCell.appendChild(event)
             })
@@ -97,13 +117,24 @@ function buildCalendar() {
     return weekDates
 }
 
-function updateCalendar(newEvent){
-    let dateCell = document.createElement('p')
-    dateCell.innerText = `${newEvent.name}  ${newEvent.date}`
+function updateCalendar(newEvent, delEvent){
     let element = document.querySelectorAll('div.divTableCell')
     let eventAsDateString = new Date(newEvent.date).toDateString()
     const idx = calendarDates.findIndex(date => date === eventAsDateString)
-    element[idx].appendChild(dateCell)
+    if(delEvent){
+        let dayEvents = element[idx].getElementsByTagName('p')
+        let delEvent = findHtmlEvent(dayEvents,newEvent)
+        if(delEvent){
+            element[idx].removeChild(delEvent)
+        }else{
+            console.log('Failed to calendar find event')
+        }
+    }else{
+        let dateCell = document.createElement('p')
+        dateCell.id = newEvent.id
+        dateCell.innerText = `${newEvent.name}  ${newEvent.date}`
+        element[idx].appendChild(dateCell)
+    }
 }
 
 async function addEventButton(){
@@ -113,14 +144,14 @@ async function addEventButton(){
     const eventDateAsDate = new Date(eventDate)
     eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
     if(isDuplicateEvent(eventName, eventDateAsDate)){return}
-    const newEvent = {id: '', name: eventName, date: eventDateAsDate.toLocaleDateString()}
+    const newEvent = {id: events.length + 1, name: eventName, date: eventDateAsDate.toLocaleDateString()}
     let resp = await eventListPost(newEvent)
     if(resp.ok){
         let content = await resp.json()
         events.push(content)
-        updateEventList(content)
+        updateEventList(content,false)
         if(isThisWeek(eventDateAsDate)){
-            updateCalendar(content)
+            updateCalendar(content,false)
         }
     }else{
         console.log(`Failed to add Event Error: ${resp.status}`)
@@ -135,7 +166,23 @@ function updateEventModifier(eventSummary){
 }
 
 async function deleteEventButton(){
-    
+    const eventName = document.getElementById('eventName').value
+    const eventDate = document.getElementById('eventDate').value
+    if(eventName === '' || eventDate === ''){return}
+    const eventDateAsDate = new Date(eventDate)
+    eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
+    let selEvent = events.find(event => event.name === eventName && event.date === eventDateAsDate.toLocaleDateString())
+    console.log(selEvent.id)
+    let resp = await fetch(`/events/${selEvent.id}`, {
+        method: "DELETE"
+    })
+    console.log(resp)
+    if(resp.ok){
+        updateCalendar(selEvent,true)
+        updateEventList(selEvent,true)
+    }else{
+        console.log(`Failed to delete event error: ${resp.status}`)
+    }
 }
 
 let events = []
