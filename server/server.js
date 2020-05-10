@@ -29,15 +29,24 @@ router.get('/events', async (context) => {
 router.post("/events", async (context) => {
     let newEvent = context.request.body
     if(!(newEvent.name && newEvent.date)){return}
-    const query = `INSERT INTO event_manager.event_table (event_name, event_date, event_date_str) 
+    let query = `INSERT INTO event_manager.event_table (event_name, event_date, event_date_str) 
         VALUES (${sql.con.escape(newEvent.name)}, NOW(), ${sql.con.escape(newEvent.date)})`
     try{
         let data = await sql.con.query(query)
+        console.log(data)
     }catch(err){
         console.log(err)
     }
-    context.response.status = 201
-    context.response.body = newEvent
+    
+    query = 'SELECT * FROM event_manager.event_table ORDER BY event_id DESC LIMIT 1;'
+    try{
+        let addedEvent = await sql.con.query(query)
+        console.log(addedEvent)
+        context.response.status = 201
+        context.response.body = addedEvent
+    }catch(err){
+        console.log(err)
+    }
 })
 
 // router.put("/events/:id", async (context) => {
