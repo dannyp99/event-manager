@@ -17,7 +17,6 @@ class EventController {
 
     async getEvents(){
         let fetchedEvents = (await this.sync.eventListGet()).map(event => new Event(event))
-        console.log(fetchedEvents)
         this.events = fetchedEvents
         this.createEventList(this.events)
         this.calendarDates = this.buildCalendar()
@@ -117,7 +116,6 @@ class EventController {
         const newEvent = {id: 0, name: eventName, date: eventDateAsDate.toLocaleDateString()}
         let resp = await this.sync.eventListPost(newEvent)
         if(resp){
-            console.log(resp)
             const addedEvent = resp.map(event => new Event(event))
             this.events = this.events.concat(addedEvent)
             const content = addedEvent[0]
@@ -143,11 +141,9 @@ class EventController {
         if(eventName === '' || eventDate === ''){return}
         const eventDateAsDate = new Date(eventDate)
         eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
-        console.log(this.events[0])
         let selEvent = this.events.find(event => event.name === eventName && event.date === eventDateAsDate.toLocaleDateString())
         if(selEvent){
             let resp = await this.sync.eventDelete(selEvent)
-            console.log(resp)
             if(resp.ok){
                 this.events.remove(selEvent)
                 this.updateCalendar(selEvent,true)
