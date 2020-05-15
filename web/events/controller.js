@@ -1,31 +1,22 @@
 import Event from "./event.js"
-import Sync from "./sync.js"
+import Sync from "../sync.js"
 import Helper from "./helper.js"
-import View from "./eventView.js"
-import CalendarView from "./calendarView.js"
-import EventListView from "./eventListView.js"
 
 class EventController {
 
-    constructor(){
+    constructor(mainView){
+        this.mainView = mainView
         this.sync = new Sync()
         this.helper = new Helper()
         this.events = []
         this.getEvents()
-        this.calendarView = new CalendarView(document.querySelector('div.divTableRow'))
-        this.eventListView = new EventListView(document.querySelector('event-list'))
-        this.eventListView.addEventListener('sel_event', event => this.eventView.updateEventModifier(event.detail.event))
-        this.eventView = new View(document.querySelector('event-view'))
-        this.eventView.addEventListener('add_event', event => this.addEventButton(event.target.event.name.value, event.target.event.date.value))
-        this.eventView.addEventListener('del_event', event => this.delEventButton(event.detail.event.name.value, event.detail.event.date.value))
     }
 
     async getEvents(){
         let fetchedEvents = (await this.sync.eventListGet()).map(event => new Event(event))
         console.log(fetchedEvents)
         this.events = fetchedEvents
-        this.eventListView.createEventList(this.events)
-        this.calendarView.buildCalendar(this.events)
+        this.mainView.buildViews(this.events)
     }
 
 
@@ -44,10 +35,7 @@ class EventController {
                 const addedEvent = resp.map(event => new Event(event))
                 this.events = this.events.concat(addedEvent)
                 const content = addedEvent[0]
-                this.eventListView.updateEventList(content,false)
-                if(this.helper.isThisWeek(eventDateAsDate)){
-                    this.calendarView.updateCalendar(content,false)
-                }
+                this.mainView.addToViews(content)
             }else{
                 console.log(`Failed to add Event Error: ${resp.status}`)
             }
@@ -65,8 +53,7 @@ class EventController {
             console.log(resp)
             if(resp.ok){
                 this.events.remove(selEvent)
-                this.calendarView.updateCalendar(selEvent,true)
-                this.eventListView.updateEventList(selEvent,true)
+                this.mainView.delFromViews(selEvent)
             }else{
                 console.log(`Failed to delete event error: ${resp.status}`)
             }

@@ -1,3 +1,4 @@
-import EventController from "./controller.js"
+import EventController from "./events/controller.js"
+import MainView from "./mainView.js"
 
-new EventController()
+new EventController(new MainView())
