@@ -1,3 +1,4 @@
+//Event Class for the actual event
 class Event{
     constructor(data){
         this.event = data

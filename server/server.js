@@ -13,6 +13,7 @@ Sugar.extend()
 let file_server = KoaStatic(`${__dirname}/../web`)
 console.log(sql)
 
+//Query to get all events
 router.get('/events', async (context) => {
     let eventList = []
     const query = 'SELECT * FROM event_manager.event_table'
@@ -25,7 +26,7 @@ router.get('/events', async (context) => {
     catch (err) { console.log(err) }
     context.response.body = eventList
 })
-
+//Query to add an event
 router.post("/events", async (context) => {
     let newEvent = context.request.body
     if(!(newEvent.name && newEvent.date)){return}
@@ -37,7 +38,7 @@ router.post("/events", async (context) => {
     }catch(err){
         console.log(err)
     }
-    
+    //Query the newly added event and return it
     query = 'SELECT * FROM event_manager.event_table ORDER BY event_id DESC LIMIT 1;'
     try{
         let addedEvent = await sql.con.query(query)
@@ -48,19 +49,7 @@ router.post("/events", async (context) => {
         console.log(err)
     }
 })
-
-// router.put("/events/:id", async (context) => {
-//     let eventID = Number(context.params.id)
-//     let updatedEventData = context.request.body
-  
-//     let chosenEvent = eventList.find((event) => event.id === eventID )
-  
-//     chosenEvent.date = updatedEventData.date
-//     chosenEvent.name = updatedEventData.name
-  
-//     context.response.status = 204
-// })
-
+//Query to delete the event
 router.delete("/events/:id", async (context) => {
     let eventID = Number(context.params.id)
     if(eventID < 0){return}
