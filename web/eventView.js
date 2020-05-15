@@ -13,17 +13,16 @@ class View extends EventTarget{
         this.delBut = this.element.querySelector('[name=removeEvent]')
         this.helper = new Helper()
         this.addBut.addEventListener('click', () => {
-            this.dispatchEvent(new CustomEvent("add_event", {event: this.event}))
+            this.dispatchEvent(new CustomEvent("add_event", {detail:{event: this.event}}))
         })
         this.delBut.addEventListener('click', () => {
-            this.dispatchEvent(new CustomEvent("del_event", {event: this.event}))
+            this.dispatchEvent(new CustomEvent("del_event", {detail:{event: this.event}}))
         })
     }
 
     updateEventModifier(event){
-        const eventItems =  event.innerText.split(':')
-        const htmlDate = this.helper.formatDate(eventItems[1])
-        this.event.name.value = eventItems[0]
+        const htmlDate = this.helper.formatDate(event.date)
+        this.event.name.value = event.name
         this.event.date.value = htmlDate
     }
 

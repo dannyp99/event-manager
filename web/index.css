@@ -21,7 +21,7 @@ p:active {
     background-color: #ddd;
 }
   
-calendar-view {
+event-view {
     grid-area: detail;
     background-color: #eee;
 }

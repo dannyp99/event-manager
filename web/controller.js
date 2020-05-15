@@ -2,6 +2,8 @@ import Event from "./event.js"
 import Sync from "./sync.js"
 import Helper from "./helper.js"
 import View from "./eventView.js"
+import CalendarView from "./calendarView.js"
+import EventListView from "./eventListView.js"
 
 class EventController {
 
@@ -10,102 +12,22 @@ class EventController {
         this.helper = new Helper()
         this.events = []
         this.getEvents()
-        this.view = new View(document.querySelector('calendar-view'))
-        this.view.addEventListener('add_event', event => this.addEventButton(event.target.event.name.value, event.target.event.date.value))
-        this.view.addEventListener('del_event', event => this.delEventButton(event.target.event.name.value, event.target.event.date.value))
+        this.calendarView = new CalendarView(document.querySelector('div.divTableRow'))
+        this.eventListView = new EventListView(document.querySelector('event-list'))
+        this.eventListView.addEventListener('sel_event', event => this.eventView.updateEventModifier(event.detail.event))
+        this.eventView = new View(document.querySelector('event-view'))
+        this.eventView.addEventListener('add_event', event => this.addEventButton(event.target.event.name.value, event.target.event.date.value))
+        this.eventView.addEventListener('del_event', event => this.delEventButton(event.detail.event.name.value, event.detail.event.date.value))
     }
 
     async getEvents(){
         let fetchedEvents = (await this.sync.eventListGet()).map(event => new Event(event))
         console.log(fetchedEvents)
         this.events = fetchedEvents
-        this.createEventList(this.events)
-        this.calendarDates = this.buildCalendar()
+        this.eventListView.createEventList(this.events)
+        this.calendarView.buildCalendar(this.events)
     }
 
-    buildEventElement(event){
-        let eventContent = document.createElement('p')
-        eventContent.id = event.id
-        eventContent.innerText = `${event.name}: ${event.date}`
-        eventContent.addEventListener('click', (event)=> {
-            this.view.updateEventModifier(event.target)
-        })
-        return eventContent
-    }
-
-    createEventList(eventList){
-        let eventListElement = document.querySelector('event-list')
-        eventList.forEach(event => {
-            let builtEvent = this.buildEventElement(event)
-            eventListElement.appendChild(builtEvent)
-        });
-    }
-
-    updateEventList(event,delEvent){
-        let eventListElement = document.querySelector('event-list')
-        if(delEvent){
-            let dayEvents = eventListElement.getElementsByTagName('p')
-            let delEvent = this.helper.findHtmlEvent(dayEvents,event)
-            if(delEvent){
-                eventListElement.removeChild(delEvent)
-            }else{
-                console.log('Failed to find event in event list')
-            }
-        }else{
-            let newEvent = this.buildEventElement(event)
-            eventListElement.appendChild(newEvent)
-        }
-    }
-
-    buildCalendar() {
-        let element = document.querySelector('div.divTableRow')
-        let today = new Date();
-        let weekDates = []
-        for(let i = 0; i < 7; i++) {
-            let dateCell = document.createElement('div')
-            dateCell.className = 'divTableCell'
-            let eventDates = this.events.filter(event => new Date(event.event.date).toDateString() === today.toDateString())
-            if(eventDates.length > 0){
-                dateCell.innerHTML = `<div class="divTableHead"><strong>${today.toDateString()}</strong></div>`
-                eventDates.forEach(eventDate => {
-                    let event = document.createElement('p')
-                    event.id = eventDate.id
-                    event.innerText = `${eventDate.name} ${eventDate.date}`
-                    dateCell.appendChild(event)
-                })
-            
-            }else{
-                dateCell.innerHTML = `
-                    <div class="divTableHead"><strong>${today.toDateString()}</strong></div>
-                `
-            }
-            element.appendChild(dateCell)
-            weekDates.push(today.toDateString())
-            today.setDate(today.getDate() + 1)
-        }
-        return weekDates
-    }
-
-    updateCalendar(newEvent, delEvent){
-        let element = document.querySelectorAll('div.divTableCell')
-        let eventAsDateString = new Date(newEvent.date).toDateString()
-        const idx = this.calendarDates.findIndex(date => date === eventAsDateString)
-        if(idx < 0){return}
-        if(delEvent){
-            let dayEvents = element[idx].getElementsByTagName('p')
-            let delEvent = this.helper.findHtmlEvent(dayEvents,newEvent)
-            if(delEvent){
-                element[idx].removeChild(delEvent)
-            }else{
-                console.log('Failed to calendar find event')
-            }
-        }else{
-            let dateCell = document.createElement('p')
-            dateCell.id = newEvent.id
-            dateCell.innerText = `${newEvent.name}  ${newEvent.date}`
-            element[idx].appendChild(dateCell)
-        }
-    }
 
     async addEventButton(eventName, eventDate){
         console.log(eventName)
@@ -122,9 +44,9 @@ class EventController {
                 const addedEvent = resp.map(event => new Event(event))
                 this.events = this.events.concat(addedEvent)
                 const content = addedEvent[0]
-                this.updateEventList(content,false)
+                this.eventListView.updateEventList(content,false)
                 if(this.helper.isThisWeek(eventDateAsDate)){
-                    this.updateCalendar(content,false)
+                    this.calendarView.updateCalendar(content,false)
                 }
             }else{
                 console.log(`Failed to add Event Error: ${resp.status}`)
@@ -133,8 +55,6 @@ class EventController {
     }
 
     async delEventButton(eventName,eventDate){
-        console.log(eventName)
-        console.log(eventDate)
         if(eventName === '' || eventDate === ''){return}
         const eventDateAsDate = new Date(eventDate)
         eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
@@ -145,8 +65,8 @@ class EventController {
             console.log(resp)
             if(resp.ok){
                 this.events.remove(selEvent)
-                this.updateCalendar(selEvent,true)
-                this.updateEventList(selEvent,true)
+                this.calendarView.updateCalendar(selEvent,true)
+                this.eventListView.updateEventList(selEvent,true)
             }else{
                 console.log(`Failed to delete event error: ${resp.status}`)
             }
