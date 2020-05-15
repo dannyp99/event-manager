@@ -21,6 +21,7 @@ class View extends EventTarget{
     }
 
     updateEventModifier(event){
+        console.log(event)
         const htmlDate = this.helper.formatDate(event.date)
         this.event.name.value = event.name
         this.event.date.value = htmlDate

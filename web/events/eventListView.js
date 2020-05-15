@@ -12,15 +12,15 @@ class EventListView extends EventTarget{
         let eventContent = document.createElement('p')
         eventContent.id = event.id
         eventContent.innerText = `${event.name}: ${event.date}`
+        eventContent.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('sel_event', {detail:{event: event}}))
+        })
         return eventContent
     }
 
     createEventList(eventList){
         eventList.forEach(event => {
             let builtEvent = this.buildEventElement(event)
-            builtEvent.addEventListener('click', () => {
-                this.dispatchEvent(new CustomEvent('sel_event', {detail:{event: event}}))
-            })
             this.eventElements.push(builtEvent)
             this.element.appendChild(builtEvent)
         });
