@@ -1,3 +1,3 @@
-import EventController from "./controller.js"
+import EventController from "./events/controller.js"
 
 new EventController()

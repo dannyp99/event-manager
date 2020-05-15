@@ -12,12 +12,6 @@ class Helper {
         return [year, month, day].join('-');
     }
 
-    isThisWeek(eventDate){
-        let weekEnd = new Date()
-        const weekStart = new Date()
-        weekEnd.setDate(weekEnd.getDate() + 7)
-        return weekEnd > eventDate && eventDate > weekStart
-    }
 
     isDuplicateEvent(dupName, dupDate, events){
         const foundEvent = events.find(event => event.name === dupName && event.date === dupDate.toLocaleDateString())
