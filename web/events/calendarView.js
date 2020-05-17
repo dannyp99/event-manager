@@ -35,38 +35,43 @@ class CalendarView{
         }
     }
     //Add or Delete event from calendar.
-    updateCalendar(newEvent, delEvent){
+    addCalendar(newEvent){
         let element = this.element.querySelectorAll('div.divTableCell')
         let eventAsDateString = new Date(newEvent.date).toDateString()
         //Find the location of the day you want to update
         const idx = this.calendarDates.findIndex(date => date === eventAsDateString)
         //If it doesn't find it, (idx will be -1) then just return
         if(idx < 0){return}
-        //If delEvent is true
-        if(delEvent){
-            //Get the Html for that day and get the actual html for the events
-            let dayEvents = element[idx].getElementsByTagName('p')
-            //
-            let selEvent = this.helper.findHtmlEvent(dayEvents,newEvent)
-            //Get that specific event from those events
-            if(selEvent){
-                element[idx].removeChild(selEvent)
-                this.calendarDates.remove(selEvent)
-            //Otherwise let me know that it wasn't found
-            }else{
-                console.log('Failed to find calendar event')
-            }
-        //Otherwise add the event to that specific day.
-        }else{
-            let dateCell = document.createElement('p')
-            dateCell.id = newEvent.id
-            dateCell.innerText = `${newEvent.name}  ${newEvent.date}`
-            element[idx].appendChild(dateCell)
-        }
+        let dateCell = document.createElement('p')
+        dateCell.id = newEvent.id
+        dateCell.innerText = `${newEvent.name}  ${newEvent.date}`
+        element[idx].appendChild(dateCell)
     }
+    
     updateEvent(oldEvent, event){
-        this.updateCalendar(oldEvent, true)
-        this.updateCalendar(event, false)
+        this.delCalendar(oldEvent)
+        this.addCalendar(event)
+    }    
+
+    delCalendar(event){
+        let element = this.element.querySelectorAll('div.divTableCell')
+        let eventAsDateString = new Date(event.date).toDateString()
+        //Find the location of the day you want to update
+        const idx = this.calendarDates.findIndex(date => date === eventAsDateString)
+        //If it doesn't find it, (idx will be -1) then just return
+        if(idx < 0){return}
+        //Get the Html for that day and get the actual html for the events
+        let dayEvents = element[idx].getElementsByTagName('p')
+        //
+        let selEvent = this.helper.findHtmlEvent(dayEvents,event)
+        //Get that specific event from those events
+        if(selEvent){
+            element[idx].removeChild(selEvent)
+            this.calendarDates.remove(selEvent)
+        //Otherwise let me know that it wasn't found
+        }else{
+            console.log('Failed to find calendar event')
+        }
     }
 }
 export default CalendarView

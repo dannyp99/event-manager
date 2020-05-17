@@ -34,21 +34,6 @@ class EventController {
         this.eventListView.createEventList(this.events)
         this.calendarView.buildCalendar(this.events)
     }
-    //When we want to add to out views.
-    addToViews(event){
-        this.calendarView.updateCalendar(event,false)
-        this.eventListView.updateEventList(event,false)
-    }
-    //When we want to delete from our views.
-    delFromViews(event){
-        this.calendarView.updateCalendar(event,true)
-        this.eventListView.updateEventList(event,true)
-    }
-
-    updateViews(oldEvent, event){
-        this.eventListView.updateEvent(event)
-        this.calendarView.updateEvent(oldEvent, event)
-    }
     // Add Button is pressed.
     async addEventButton(eventName, eventDate){
         //If both fields are blank return
@@ -69,7 +54,9 @@ class EventController {
                 this.events = this.events.concat(addedEvent)
                 //Technically we can get back a List of events, but it should only ever return one.
                 const content = addedEvent[0]
-                this.addToViews(content)
+                this.calendarView.addCalendar(content)
+                this.eventListView.addEventList(content)
+                this.eventView.selEventId = content.id
             }else{
                 //If we get nothing back then the event was not added.
                 console.log(`Failed to add Event Error: ${resp.status}`)
@@ -92,7 +79,8 @@ class EventController {
             if(resp.ok){
                 //Remove from the events list and views.
                 this.events.remove(selEvent)
-                this.delFromViews(selEvent)
+                this.calendarView.delCalendar(selEvent)
+                this.eventListView.delEventList(selEvent)
             }else{
                 //Let me know that it failed to delete from DB.
                 console.log(`Failed to delete event error: ${resp.status}`)
@@ -102,19 +90,19 @@ class EventController {
             console.log('Event does not exist')
         }
     }
+
     async updateEvent(updateEvent){
         const eventDateAsDate = new Date(updateEvent.date)
         eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
-        console.log(updateEvent.name, eventDateAsDate)
         if(this.helper.isDuplicateEvent(updateEvent.name, eventDateAsDate, this.events)){return}
         let idx = this.events.findIndex(event => event.id === updateEvent.id)
         if(idx > 0){
             updateEvent.date = eventDateAsDate.toLocaleDateString()
-            console.log(updateEvent.date)
             let resp = await this.sync.eventPut(updateEvent)
 
             if(resp.ok){
-                this.updateViews(this.events[idx], updateEvent)
+                this.eventListView.updateEvent(updateEvent)
+                this.calendarView.updateEvent(this.events[idx], updateEvent)
                 this.events[idx] = updateEvent
             }
         }

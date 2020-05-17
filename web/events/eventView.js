@@ -14,21 +14,34 @@ class View extends EventTarget{
         }
         this.addBut = this.element.querySelector('[name=addEvent]')
         this.delBut = this.element.querySelector('[name=removeEvent]')
+        this.clrBut = this.element.querySelector('[name=clearEvent]')
         this.helper = new Helper()
         //Create event handlers that dispatch an event that the controller catches.
         this.addBut.addEventListener('click', () => {
             this.dispatchEvent(new CustomEvent("add_event", {detail:{event: this.event}}))
         })
+        //Delete event that matches the fields entered
         this.delBut.addEventListener('click', () => {
             this.dispatchEvent(new CustomEvent("del_event", {detail:{event: this.event}}))
         })
+        //Clear the view so that a new value can be added otherwise we constantly overwrite
+        this.clrBut.addEventListener('click', () => {
+            this.event.name.value = ''
+            this.event.date.value = ''
+            this.selEventId = -1
+        })
+        //Only update if an event has been selected otherwise we just create
         this.event.name.addEventListener('change', () => {
-            let updateEvent = {id: this.selEventId, name: this.event.name.value, date: this.event.date.value}
-            this.dispatchEvent(new CustomEvent('update', {detail:{event: updateEvent}}))
+            if(this.selEventId >= 0){
+                let updateEvent = {id: this.selEventId, name: this.event.name.value, date: this.event.date.value}
+                this.dispatchEvent(new CustomEvent('update', {detail:{event: updateEvent}}))
+            }
         })
         this.event.date.addEventListener('change', () => {
-            let updateEvent = {id: this.selEventId, name: this.event.name.value, date: this.event.date.value}
-            this.dispatchEvent(new CustomEvent('update', {detail:{event: updateEvent}}))
+            if(this.selEventId >= 0){
+                let updateEvent = {id: this.selEventId, name: this.event.name.value, date: this.event.date.value}
+                this.dispatchEvent(new CustomEvent('update', {detail:{event: updateEvent}}))
+            }
         })
     }
     //Update the input fields to the event the user selected.

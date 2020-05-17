@@ -19,7 +19,6 @@ class Event extends EventTarget{
 
     set name(new_value){
         this.eventData.name = new_value
-        this.dispatchEvent(new CustomEvent('update', {detail:{property: 'name'}}))
     }
 
     get date(){
@@ -28,7 +27,6 @@ class Event extends EventTarget{
 
     set date(new_value){
         this.eventData.date = new_value
-        this.dispatchEvent(new CustomEvent('update', {detail:{property: 'date'}}))
     }
 }
 
