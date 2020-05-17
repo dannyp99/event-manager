@@ -1,31 +1,34 @@
 //Event Class for the actual event
-class Event{
+class Event extends EventTarget{
     constructor(data){
-        this.event = data
+        super()
+        this.eventData = data
     }
 
     get id(){
-        return this.event.id
+        return this.eventData.id
     }
 
     set id(new_value){
-        this.event.id = new_value
+        this.eventData.id = new_value
     }
 
     get name(){
-        return this.event.name
+        return this.eventData.name
     }
 
     set name(new_value){
-        this.event.name = new_value
+        this.eventData.name = new_value
+        this.dispatchEvent(new CustomEvent('update', {detail:{property: 'name'}}))
     }
 
     get date(){
-        return this.event.date
+        return this.eventData.date
     }
 
     set date(new_value){
-        this.event.date = new_value
+        this.eventData.date = new_value
+        this.dispatchEvent(new CustomEvent('update', {detail:{property: 'date'}}))
     }
 }
 

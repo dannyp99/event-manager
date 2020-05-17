@@ -13,7 +13,7 @@ class CalendarView{
             let dateCell = document.createElement('div')
             dateCell.className = 'divTableCell'
             //Only build events from list that are a part of this day. For each day of the week.
-            let eventDates = events.filter(event => new Date(event.event.date).toDateString() === today.toDateString())
+            let eventDates = events.filter(event => new Date(event.eventData.date).toDateString() === today.toDateString())
             if(eventDates.length > 0){
                 dateCell.innerHTML = `<div class="divTableHead"><strong>${today.toDateString()}</strong></div>`
                 eventDates.forEach(eventDate => {
@@ -54,7 +54,7 @@ class CalendarView{
                 this.calendarDates.remove(selEvent)
             //Otherwise let me know that it wasn't found
             }else{
-                console.log('Failed to calendar find event')
+                console.log('Failed to find calendar event')
             }
         //Otherwise add the event to that specific day.
         }else{
@@ -63,6 +63,10 @@ class CalendarView{
             dateCell.innerText = `${newEvent.name}  ${newEvent.date}`
             element[idx].appendChild(dateCell)
         }
+    }
+    updateEvent(oldEvent, event){
+        this.updateCalendar(oldEvent, true)
+        this.updateCalendar(event, false)
     }
 }
 export default CalendarView

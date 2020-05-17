@@ -18,6 +18,7 @@ class EventController {
         this.eventListView = new EventListView(document.querySelector('event-list'))
         this.eventListView.addEventListener('sel_event', event => this.eventView.updateEventModifier(event.detail.event))
         this.eventView = new View(document.querySelector('event-view'))
+        this.eventView.addEventListener('update', event => this.updateEvent(event.detail.event))
         this.eventView.addEventListener('add_event', event => this.addEventButton(event.detail.event.name.value, event.detail.event.date.value))
         this.eventView.addEventListener('del_event', event => this.delEventButton(event.detail.event.name.value, event.detail.event.date.value))
     }
@@ -42,6 +43,11 @@ class EventController {
     delFromViews(event){
         this.calendarView.updateCalendar(event,true)
         this.eventListView.updateEventList(event,true)
+    }
+
+    updateViews(oldEvent, event){
+        this.eventListView.updateEvent(event)
+        this.calendarView.updateEvent(oldEvent, event)
     }
     // Add Button is pressed.
     async addEventButton(eventName, eventDate){
@@ -94,6 +100,23 @@ class EventController {
         }else{
             //Just let me know that the event doesn't exist.
             console.log('Event does not exist')
+        }
+    }
+    async updateEvent(updateEvent){
+        const eventDateAsDate = new Date(updateEvent.date)
+        eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
+        console.log(updateEvent.name, eventDateAsDate)
+        if(this.helper.isDuplicateEvent(updateEvent.name, eventDateAsDate, this.events)){return}
+        let idx = this.events.findIndex(event => event.id === updateEvent.id)
+        if(idx > 0){
+            updateEvent.date = eventDateAsDate.toLocaleDateString()
+            console.log(updateEvent.date)
+            let resp = await this.sync.eventPut(updateEvent)
+
+            if(resp.ok){
+                this.updateViews(this.events[idx], updateEvent)
+                this.events[idx] = updateEvent
+            }
         }
     }
 }

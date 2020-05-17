@@ -34,6 +34,19 @@ class Helper {
         }
         return undefined
     }
+    
+    findHtmlId(htmlEvents, event){
+        let idx = 0;
+        const delEventId = event.id.toString()
+        for(let event of htmlEvents){
+            if(event.id === delEventId){
+                return idx
+            }else{
+                idx += 1
+            }
+        }
+        return -1
+    }
 }
 
 export default Helper

@@ -49,6 +49,27 @@ router.post("/events", async (context) => {
         console.log(err)
     }
 })
+
+router.put("/events/:id", async (context) => {
+    let eventID = Number(context.params.id)
+    let updateEvent = context.request.body
+    if(eventID < 0){return}
+    if(!(updateEvent.name && updateEvent.date)){return}
+    const query = `UPDATE event_manager.event_table
+        SET event_name = ${sql.con.escape(updateEvent.name)},
+            event_date_str = ${sql.con.escape(updateEvent.date)}
+        WHERE event_id = ${sql.con.escape(eventID)}
+        LIMIT 1
+    `
+    try {
+        let data = await sql.con.query(query)
+        console.log(data)
+        context.response.status = 204
+    }catch(err){
+        console.log(err)
+    }
+})
+
 //Query to delete the event
 router.delete("/events/:id", async (context) => {
     let eventID = Number(context.params.id)

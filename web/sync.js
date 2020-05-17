@@ -32,6 +32,18 @@ class Server {
         //Return all of added event's should only return one
         return events
     }
+
+    async eventPut(event){
+        let resp = await fetch(`/events/${event.id}`, {
+            method: "PUT",
+            body: JSON.stringify(event),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return resp
+    }
+
     //DELETE event given the events id
     async eventDelete(event){
         let resp = await fetch(`/events/${event.id}`, {
