@@ -40,8 +40,8 @@ class EventController {
         if(eventName === '' || eventDate === ''){return}
         //If both parameters contain values actually do stuff.
         if(eventName && eventDate) {
-            const eventDateAsDate = new Date(eventDate)
-            eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
+            const eventDateAsDate = Date.create(eventDate)
+            console.log(eventDateAsDate)
             //Call Helper to check if the event entered is a duplcate.
             if(this.helper.isDuplicateEvent(eventName, eventDateAsDate, this.events)){return}
             const newEvent = {id: 0, name: eventName, date: eventDateAsDate.toLocaleDateString()}
@@ -67,8 +67,7 @@ class EventController {
     async delEventButton(eventName,eventDate){
         //If the fields are empty return
         if(eventName === '' || eventDate === ''){return}
-        const eventDateAsDate = new Date(eventDate)
-        eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
+        const eventDateAsDate = Date.create(eventDate)
         //Using the input name and date, find the event that matches the one entered.
         let selEvent = this.events.find(event => event.name === eventName && event.date === eventDateAsDate.toLocaleDateString())
         //If an event is found that matches
@@ -92,8 +91,7 @@ class EventController {
     }
 
     async updateEvent(updateEvent){
-        const eventDateAsDate = new Date(updateEvent.date)
-        eventDateAsDate.setDate(eventDateAsDate.getDate() + 1)
+        const eventDateAsDate = Date.create(updateEvent.date)
         if(this.helper.isDuplicateEvent(updateEvent.name, eventDateAsDate, this.events)){return}
         let idx = this.events.findIndex(event => event.id === updateEvent.id)
         if(idx > 0){
