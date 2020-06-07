@@ -40,11 +40,9 @@ class EventController {
         if(eventName === '' || eventDate === ''){return}
         //If both parameters contain values actually do stuff.
         if(eventName && eventDate) {
-            const eventDateAsDate = Date.create(eventDate)
-            console.log(eventDateAsDate)
             //Call Helper to check if the event entered is a duplcate.
-            if(this.helper.isDuplicateEvent(eventName, eventDateAsDate, this.events)){return}
-            const newEvent = {id: 0, name: eventName, date: eventDateAsDate.toLocaleDateString()}
+            if(this.helper.isDuplicateEvent(eventName, eventDate, this.events)){return}
+            const newEvent = {id: 0, name: eventName, date: eventDate}
             //Create a new Event and send it to be added to the DB
             let resp = await this.sync.eventListPost(newEvent)
             //It returns the Event that was added to the DB.
@@ -91,14 +89,13 @@ class EventController {
     }
 
     async updateEvent(updateEvent){
-        const eventDateAsDate = Date.create(updateEvent.date)
-        if(this.helper.isDuplicateEvent(updateEvent.name, eventDateAsDate, this.events)){return}
+        if(this.helper.isDuplicateEvent(updateEvent.name, updateEvent.date, this.events)){return}
         let idx = this.events.findIndex(event => event.id === updateEvent.id)
         if(idx > 0){
-            updateEvent.date = eventDateAsDate.toLocaleDateString()
             let resp = await this.sync.eventPut(updateEvent)
 
             if(resp.ok){
+                updateEvent.date = Date.create(updateEvent.date).toLocaleDateString()
                 this.eventListView.updateEvent(updateEvent)
                 this.calendarView.updateEvent(this.events[idx], updateEvent)
                 this.events[idx] = updateEvent

@@ -2,7 +2,7 @@
 class Helper {
     // Convert the date I use "5/12/2020" to 2020-12-5
     formatDate(date) {
-        var d = new Date(date),
+        var d = Date.create(date),
             month = '' + (d.getMonth() + 1),
             day = '' + d.getDate(),
             year = d.getFullYear();
@@ -15,7 +15,7 @@ class Helper {
     // Given the list of events determine if the inputed name and date already exist
     isDuplicateEvent(dupName, dupDate, events){
         //Search for the first occurence of that event
-        const foundEvent = events.find(event => event.name === dupName && event.date === dupDate.toLocaleDateString())
+        const foundEvent = events.find(event => event.name === dupName && event.date === Date.create(dupDate).toLocaleDateString())
         //If something is found then we have a duplicate.
         if(foundEvent){
             return true

@@ -8,7 +8,7 @@ class CalendarView{
     }
     //Build The calendar view.
     buildCalendar(events) {
-        let today = new Date();
+        let today = Date.create()
         for(let i = 0; i < 7; i++) {
             let dateCell = document.createElement('div')
             dateCell.className = 'divTableCell'

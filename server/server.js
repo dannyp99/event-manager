@@ -30,8 +30,10 @@ router.get('/events', async (context) => {
 router.post("/events", async (context) => {
     let newEvent = context.request.body
     if(!(newEvent.name && newEvent.date)){return}
+    let eventDate = Date.create(newEvent.date)
+    console.log(eventDate)
     let query = `INSERT INTO event_manager.event_table (event_name, event_date, event_date_str) 
-        VALUES (${sql.con.escape(newEvent.name)}, NOW(), ${sql.con.escape(newEvent.date)})`
+        VALUES (${sql.con.escape(newEvent.name)}, ${sql.con.escape(eventDate)}, ${sql.con.escape(eventDate.toLocaleDateString())})`
     try{
         let data = await sql.con.query(query)
         console.log(data)
@@ -55,9 +57,11 @@ router.put("/events/:id", async (context) => {
     let updateEvent = context.request.body
     if(eventID < 0){return}
     if(!(updateEvent.name && updateEvent.date)){return}
+    const updateDate = Date.create(updateEvent.date)
     const query = `UPDATE event_manager.event_table
         SET event_name = ${sql.con.escape(updateEvent.name)},
-            event_date_str = ${sql.con.escape(updateEvent.date)}
+            event_date = ${sql.con.escape(updateDate)},
+            event_date_str = ${sql.con.escape(updateDate.toLocaleDateString())}
         WHERE event_id = ${sql.con.escape(eventID)}
         LIMIT 1
     `
