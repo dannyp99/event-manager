@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "dependencies": {
     "@koa/router": "^8.0.8",
-    "googleapis": "^39.2.0",
+    "googleapis": "^118.0.0",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.3.0",
     "koa-logger": "^3.2.1",
